@@ -1,0 +1,104 @@
+1) generic function for traits =>
+
+In Rust, &dyn MyTrait is a reference to a trait object. Here's what each part means:
+
+&: This signifies that the argument is a reference. References are used to borrow values rather than taking ownership of them. In this case, it's a shared reference, which means that the function can read the value but cannot modify it.
+dyn: This keyword is short for "dynamic." It indicates that the type of the object being referred to is not known at compile time but will be determined at runtime. This is necessary when working with trait objects because the concrete type implementing the trait is only known at runtime.
+MyTrait: This is the trait that the object being referred to must implement. The dyn keyword is followed by the name of the trait to create a dynamic trait object, which allows you to call methods defined by the trait on the referenced object.
+So, &dyn MyTrait is a reference to an object that implements the MyTrait trait. This is commonly used when you want to accept objects of different concrete types that all implement the same trait.
+
+2)String vs str
+"String" refers to the String type, and "str" refers to string slices (&str). Both are important for string handling in Rust, with String being used for owned, mutable strings, and str being used for immutable string slices.
+str = immutable reference to a string.
+
+// Creating a String
+let mut s = String::from("hello");
+
+// Appending to the String
+s.push_str(", world!");
+
+// Creating a string slice from the String
+let slice: &str = &s;
+
+println!("String: {}", s);    // Prints "hello, world!"
+println!("String slice: {}", slice); // Prints "hello, world!"
+
+https://dev.to/dsysd_dev/string-vs-str-in-rust-understanding-the-fundamental-differences-for-efficient-programming-4og8#:~:text=String%20owns%20the%20data%20it,does%20not%20own%20the%20data.
+
+3) In Rust, when you pass a struct as an argument to a function, it is moved by default unless it explicitly implements the Copy trait. This is part of Rust's ownership system, which ensures memory safety without the need for a garbage collector.
+
+To implement the Copy trait in Rust for your struct, all fields of the struct must themselves implement the Copy trait. The Copy trait is used for types that can be safely copied byte-for-byte. When a type implements Copy, it means that values of that type are entirely copied when they are assigned to another variable or passed to a function.
+
+#[derive(Clone, Copy)] // This line derives both Clone and Copy traits
+struct Car {
+    model: String,
+    year: u32,
+}
+
+https://doc.rust-lang.org/std/marker/trait.Copy.html
+
+If you want to implement the Copy trait for a struct that contains a String, you have to use Clone instead. String cannot implement Copy because it owns heap-allocated memory, and copying it would involve transferring ownership, which could lead to memory safety issues. Instead, you can implement the Clone trait for your struct.
+
+what is clone trait =>
+In Rust, the Clone trait allows you to create a duplicate copy of a value. This can be useful in scenarios where you need to create a separate, independent copy of an object rather than just referencing or borrowing it.
+When a type implements the Clone trait, you can use the clone() method to create a new instance of that type with the same data. This is different from the Copy trait, which is more limited and only applies to types that can be trivially copied via simple bitwise copying (like integers and floats).
+
+difference in copy and clone trait =>
+The main difference between the Clone and Copy traits in Rust lies in how they handle duplication of values.
+Clone Trait:
+The Clone trait provides a clone() method that allows creating a deep copy of a value.
+Types that implement Clone need to explicitly define how cloning should be performed by overriding the clone() method.
+Cloning creates a new, separate instance of the value, and the ownership of the new instance is independent of the original.
+Cloning is more flexible and allows for custom copying logic, making it suitable for types that involve complex or expensive operations.
+
+Copy Trait:
+The Copy trait indicates that a type can be duplicated via simple bitwise copying.
+Types that implement Copy are trivially duplicated by just copying the bits in memory.
+Copying doesn't involve any special logic or method calls; it's a straightforward operation performed by the compiler.
+Types that implement Copy are typically simple, immutable, and don't involve ownership or resources, like integers, floats, booleans, and tuples of Copy types.
+Copying is fast and doesn't require any runtime overhead.
+In summary, Clone provides a method for deep copying with custom logic, while Copy allows for shallow copying of types that are simple and don't require custom duplication behavior. The choice between them depends on the specific requirements and characteristics of the types involved.
+
+4) How to print struct / enum value in println! 
+using debug trait = https://doc.rust-lang.org/std/fmt/trait.Debug.html
+
+5)To use HashMap we need to import it using = use std::collections::HashMap;
+
+6) how to use other library in rust project =
+  1. in [dependencies] in Cargo.toml mention -> rand = "0.8.4"
+  2. import one of the function in main.rs -> use rand::Rng;
+  3. use it -> 
+  use rand::Rng;
+  let mut rng = rand::thread_rng();
+  let number = rng.gen_range(1..=100);
+
+7) rust does not have malloc and free ? =>
+
+Correct. Rust does not have malloc and free functions like in languages such as C or C++. Instead, Rust manages memory through its ownership system and automatic memory management features, such as ownership, borrowing, and lifetimes. This allows Rust to guarantee memory safety without the need for manual memory management or garbage collection.
+
+Here are some key concepts in Rust's memory management model:
+
+Ownership: In Rust, each value has a single owner. When the owner goes out of scope, the value is dropped automatically.
+Borrowing: Instead of transferring ownership, Rust allows borrowing references to values. Borrowed references can be immutable (&T) or mutable (&mut T), and they enforce certain rules at compile time to prevent data races and other memory safety issues.
+Lifetimes: Lifetimes specify the scope for which references are valid. They ensure that references don't outlive the data they refer to, preventing dangling pointers.
+RAII (Resource Acquisition Is Initialization): Rust follows the RAII pattern, where resources are acquired during initialization and released automatically when they go out of scope. This eliminates the need for explicit memory allocation and deallocation.
+While Rust doesn't have malloc and free, it does provide facilities for manual memory allocation via the std::alloc module. However, manual memory allocation is rarely needed in Rust, and it's generally recommended to use higher-level abstractions like vectors (Vec) or smart pointers (Box, Rc, Arc) for managing dynamic memory. These abstractions leverage Rust's ownership system to ensure memory safety without sacrificing performance.
+
+8) advantage of rust over cpp
+https://www.scaler.com/topics/rust-vs-cpp/
+https://www.geeksforgeeks.org/rust-vs-cpp/
+
+Memory Safety:
+Rust: Rust enforces strict rules to ensure memory safety at compile time, preventing common issues such as null pointer dereferencing, buffer overflows, and data races. Rust’s ownership system, which includes concepts like borrowing and lifetimes, guarantees that memory is managed safely and efficiently.
+C++: C++ provides manual memory management, which offers flexibility but also increases the risk of memory-related bugs. Developers must use techniques like smart pointers to manage memory more safely, but these are not enforced by the language.
+In Rust, the Arc (atomic reference counted) and Mutex types ensure that access to the data is synchronized and safe, whereas in C++, the developer must manually manage synchronization with mutexes.
+
+Concurrency:
+Rust: Rust's concurrency model is designed to prevent data races at compile time. The ownership system ensures that only one mutable reference to data exists, or multiple immutable references, but not both.
+C++: While C++ supports concurrency through threads and libraries like <thread>, <mutex>, and <future>, the language itself does not prevent data races. It is up to the developer to write safe concurrent code.
+
+Tooling and Ecosystem:
+Rust: Rust has a modern build system and package manager called Cargo, which makes managing dependencies, running tests, and building projects straightforward. Rust also comes with built-in documentation tools and a test framework.
+C++: C++ has a more fragmented ecosystem with multiple build systems and package managers. Tools like CMake, Make, and various package managers (e.g., Conan, vcpkg) are commonly used, but they require more setup and configuration.
+
+9) Just read the 3 projects in "test" folder. That is the rust syntax that we learned through course.
