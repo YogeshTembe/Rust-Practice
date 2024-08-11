@@ -12,3 +12,7 @@ pub fn checkifeven(a:i32)->bool{
 pub fn append_some(s:&mut String){
     s.push_str("some");
 }
+
+pub fn print_str(s:String){
+    println!("print_str:{}",s);
+}

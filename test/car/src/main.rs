@@ -61,8 +61,16 @@ fn print_more_noise(item:&dyn MoreNoisy){
     println!("print_more_noise2:{}",item.get_more_car_noise());
 }
 
+fn change_car_noise(car:&mut Car){
+    car.noise = "ererr".to_string();
+}
+
+fn create_new_car(car:&Car)->Car{
+    return Car::new(car.fuel+23,car.isengineoff,car.noise.clone());
+}
+
 fn main() {
-    let maruti:Car=Car::new(20,false,"bambam".to_string());
+    let mut maruti:Car=Car::new(20,false,"bambam".to_string());
     print_noise(&maruti);
     print_more_noise(&maruti);
 
@@ -71,5 +79,10 @@ fn main() {
     print_more_noise(&benz);
 
     println!("maruti-{:?}",maruti);
+    change_car_noise(&mut maruti);
+    println!("updated maruti-{:?}",maruti);
+
+    let mut newcar:Car = create_new_car(&maruti);
+    println!("newcar-{:?}",newcar);
 }
 

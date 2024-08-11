@@ -26,6 +26,12 @@ fn main() {
     rollnos.push(rng.gen_range(1..=10));
     rollnos.push(rng.gen_range(1..=23));
 
+    let some:Vec<i32> = vec![1,2,3];
+
+    for num in 0..some.len(){
+        println!("{}",some[num]);
+    }
+
     for num in 0..rollnos.len(){
         println!("Random number: {}", rollnos[num]);
     }
